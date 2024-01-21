@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation template for s3 bucket 
+    
+Resources:
+  s3bucket:
+    Type: AWS::S3::Bucket
+    Description: Creating Amazon S3 bucket from CloudFormation
+    Properties:
+      BucketName: my-test-bk01
+
+Outputs:
+  s3bucketname: 
+    Description: Bucket Created using this template.
+    Value: !Ref s3bucket
