@@ -2,6 +2,11 @@
 
 AWSTemplateFormatVersion: 2010-09-09
 Description: CloudFormation template for s3 bucket and cloudfront distribution
+
+Parameters:
+  MyBucketName:
+    Type: String
+    Default: my-test-bk01
     
 Resources:
  
@@ -9,7 +14,7 @@ Resources:
     Type: AWS::S3::Bucket
     Description: Creating Amazon S3 bucket from CloudFormation
     Properties:
-      BucketName: my-test-bk01
+      BucketName: !Ref MyBucketName
 
 #### Create OAC for cloudfront to access s3 bucket with an identity.      
 
@@ -28,7 +33,7 @@ Resources:
     Properties:
       DistributionConfig: 
         Origins:
-          - DomainName: "my-test-bk01.s3.ap-south-1.amazonaws.com"
+          - DomainName: !Sub "${s3bucket}.s3.ap-south-1.amazonaws.com"
             Id: static-hosting
             S3OriginConfig:
               OriginAccessIdentity: ""
@@ -48,7 +53,7 @@ Resources:
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: "my-test-bk01"
+      Bucket: !Ref s3bucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -56,7 +61,7 @@ Resources:
             Principal:
               Service: "cloudfront.amazonaws.com"
             Action: "s3:GetObject"
-            Resource: "arn:aws:s3:::my-test-bk01/*"
+            Resource: !Sub "arn:aws:s3:::${s3bucket}/*"
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${cloudfrontdst}"
